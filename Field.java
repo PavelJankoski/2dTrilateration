@@ -176,6 +176,12 @@ public class Field{
 		return  Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
 	}
 	
+	public double gaussRandomValueInRange(double distance) {
+		Random r = new Random();
+		return (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
+		
+	}
+	
 	
 	public void generateFieldAndPoints() {
 		
@@ -189,14 +195,13 @@ public class Field{
 			points.add(p);
 			
 		}
-		Random r = new Random();
 		for(int i = 0;i<getNonAnchorsSize();i++) {
 			for(int j = 0;j<getAnchorsSize();j++) {
 				Point nonAnchor = points.get(i);
 				Point anchor = points.get(points.size()-1-j);
 				double distance = calculateDistance(nonAnchor.getX(), anchor.getX(), nonAnchor.getY(), anchor.getY());
 				//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
-				double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
+				double distanceWithError = gaussRandomValueInRange(distance);
 				if(distanceWithError<=radiusRange) {
 					nonAnchor.getAnchorsInRange().add(new Anchor(anchor, distanceWithError));
 				}
@@ -228,7 +233,6 @@ public class Field{
 	
 	public void iterativeMostRelevant() {
 		List<Point> points_cloned = new ArrayList<>(points);
-		Random r = new Random();
 		int count = 0;
 		float ALE = 0;
 		for(int i = 0 ; i<points_cloned.size();i++) {
@@ -248,7 +252,7 @@ public class Field{
 					if(!points_cloned.get(j).isAnchor() && i!=j) {
  						double distance = calculateDistance(points_cloned.get(j).getX(), points_cloned.get(i).getX(), points_cloned.get(j).getY(), points_cloned.get(i).getY());
  						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
-						double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
+						double distanceWithError = gaussRandomValueInRange(distance);
 						if(distanceWithError<=radiusRange) {
 							points_cloned.get(j).getAnchorsInRange().add(new Anchor(points_cloned.get(i), distanceWithError));
 						}
@@ -265,7 +269,6 @@ public class Field{
 	
 	public void iterativeThreeClosest() {
 		List<Point> points_cloned = new ArrayList<>(points);
-		Random r = new Random();
 		int count = 0;
 		float ALE = 0;
 		for(int i = 0 ; i<points_cloned.size();i++) {
@@ -284,7 +287,7 @@ public class Field{
 					if(!points_cloned.get(j).isAnchor() && i!=j) {
  						double distance = calculateDistance(points_cloned.get(j).getX(), points_cloned.get(i).getX(), points_cloned.get(j).getY(), points_cloned.get(i).getY());
  						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
-						double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
+						double distanceWithError = gaussRandomValueInRange(distance);
 						if(distanceWithError<=radiusRange) {
 							points_cloned.get(j).getAnchorsInRange().add(new Anchor(points_cloned.get(i), distanceWithError));
 						}
@@ -447,7 +450,7 @@ public class Field{
 //		Field f = new Field(100,100,20,30,10);
 		f.generateFieldAndPoints();
 		f.nonIterative();
-		f.iterativeMostRelevant();
-//		f.iterativeThreeClosest();
+//		f.iterativeMostRelevant();
+		f.iterativeThreeClosest();
 	}
 }
