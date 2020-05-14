@@ -172,6 +172,10 @@ public class Field{
 		return (numPoints*(anchorPercent/100.0));
 	}
 	
+	public double calculateDistance(double x1, double x2, double y1, double y2) {
+		return  Math.sqrt(Math.pow((x1-x2), 2) + Math.pow((y1-y2), 2));
+	}
+	
 	
 	public void generateFieldAndPoints() {
 		
@@ -190,7 +194,7 @@ public class Field{
 			for(int j = 0;j<getAnchorsSize();j++) {
 				Point nonAnchor = points.get(i);
 				Point anchor = points.get(points.size()-1-j);
-				double distance = Math.sqrt(Math.pow((nonAnchor.getX()-anchor.getX()), 2) + Math.pow((nonAnchor.getY()-anchor.getY()), 2));
+				double distance = calculateDistance(nonAnchor.getX(), anchor.getX(), nonAnchor.getY(), anchor.getY());
 				//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
 				double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
 				if(distanceWithError<=radiusRange) {
@@ -212,7 +216,7 @@ public class Field{
 				List<Double> newCoordinates = Trilateration(awd1,awd2,awd3);
 				points.get(i).setXpr(newCoordinates.get(0));
 				points.get(i).setYpr(newCoordinates.get(1));
-				double error = Math.sqrt(Math.pow((points.get(i).getX()-newCoordinates.get(0)), 2) + Math.pow((points.get(i).getY()-newCoordinates.get(1)), 2));
+				double error = calculateDistance(points.get(i).getX(), newCoordinates.get(0), points.get(i).getY(), newCoordinates.get(1));
 				points.get(i).setError(error);
 				ALE+=error;
 				count++;
@@ -236,14 +240,14 @@ public class Field{
 				List<Double> newCoordinates = Trilateration(awd1,awd2,awd3);
 				points_cloned.get(i).setXpr(newCoordinates.get(0));
 				points_cloned.get(i).setYpr(newCoordinates.get(1));
-				double error = Math.sqrt(Math.pow((points_cloned.get(i).getX()-newCoordinates.get(0)), 2) + Math.pow((points_cloned.get(i).getY()-newCoordinates.get(1)), 2));
+				double error = calculateDistance(points_cloned.get(i).getX(), newCoordinates.get(0), points_cloned.get(i).getY(), newCoordinates.get(1));
 				points_cloned.get(i).setError(error);
 				points_cloned.get(i).setCost(awd1.getP().getCost() + awd2.getP().getCost() + awd3.getP().getCost() + 1);
 				points_cloned.get(i).setAnchor(true);
 				for(int j=0;j<points_cloned.size();j++) {
 					if(!points_cloned.get(j).isAnchor() && i!=j) {
- 						double distance = Math.sqrt(Math.pow((points_cloned.get(j).getX()-points_cloned.get(i).getX()), 2) + Math.pow((points_cloned.get(j).getY()-points_cloned.get(i).getY()), 2));
-						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
+ 						double distance = calculateDistance(points_cloned.get(j).getX(), points_cloned.get(i).getX(), points_cloned.get(j).getY(), points_cloned.get(i).getY());
+ 						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
 						double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
 						if(distanceWithError<=radiusRange) {
 							points_cloned.get(j).getAnchorsInRange().add(new Anchor(points_cloned.get(i), distanceWithError));
@@ -273,13 +277,13 @@ public class Field{
 				List<Double> newCoordinates = Trilateration(awd1,awd2,awd3);
 				points_cloned.get(i).setXpr(newCoordinates.get(0));
 				points_cloned.get(i).setYpr(newCoordinates.get(1));
-				double error = Math.sqrt(Math.pow((points_cloned.get(i).getX()-newCoordinates.get(0)), 2) + Math.pow((points_cloned.get(i).getY()-newCoordinates.get(1)), 2));
+				double error = calculateDistance(points_cloned.get(i).getX(), newCoordinates.get(0), points_cloned.get(i).getY(), newCoordinates.get(1));
 				points_cloned.get(i).setError(error);
 				points_cloned.get(i).setAnchor(true);
 				for(int j=0;j<points_cloned.size();j++) {
 					if(!points_cloned.get(j).isAnchor() && i!=j) {
- 						double distance = Math.sqrt(Math.pow((points_cloned.get(j).getX()-points_cloned.get(i).getX()), 2) + Math.pow((points_cloned.get(j).getY()-points_cloned.get(i).getY()), 2));
-						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
+ 						double distance = calculateDistance(points_cloned.get(j).getX(), points_cloned.get(i).getX(), points_cloned.get(j).getY(), points_cloned.get(i).getY());
+ 						//double distanceWithError = ThreadLocalRandom.current().nextDouble(distance-(distance*(10/100.0)), distance+(distance*(10/100.0)));
 						double distanceWithError = (distance-(distance*(errorChancePercentage/100.0))) + ((distance+(distance*(errorChancePercentage/100.0))) - (distance-(distance*(errorChancePercentage/100.0)))) * r.nextDouble();
 						if(distanceWithError<=radiusRange) {
 							points_cloned.get(j).getAnchorsInRange().add(new Anchor(points_cloned.get(i), distanceWithError));
